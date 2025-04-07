@@ -1,0 +1,206 @@
+<div class="container mt-4">
+    <div class="card">
+      <div class="card-header">
+        <h2>{{ isEditMode ? 'Edit Event' : 'Create New Event' }}</h2>
+      </div>
+      
+      <div class="card-body">
+        @if(isLoading){
+          <div class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        }
+        @if(errorMessage){
+          <div class="alert alert-danger">
+            {{ errorMessage }}
+          </div>
+        }
+        
+        @if(!isLoading){
+          <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
+            <!-- Title -->
+            <div class="mb-3">
+              <label for="title" class="form-label">Event Title *</label>
+              <input 
+                type="text" 
+                id="title" 
+                formControlName="title" 
+                class="form-control" 
+                [ngClass]="{'is-invalid': eventForm.get('title')?.invalid && eventForm.get('title')?.touched}"
+              >
+              @if(eventForm.get('title')?.invalid && eventForm.get('title')?.touched){
+                <div class="invalid-feedback">
+                  @if(eventForm.get('title')?.errors?.['required']){ <div>Title is required</div>}
+                  @if(eventForm.get('title')?.errors?.['minlength']){<div>Title must be at least 3 characters</div>}
+                  @if(eventForm.get('title')?.errors?.['maxlength']){<div>Title cannot exceed 100 characters</div>}
+                  @if(eventForm.get('title')?.errors?.['serverError']){ <div>{{ eventForm.get('title')?.errors?.['serverError'] }}</div>}
+                </div>
+              }
+             
+            </div>
+    
+            <!-- Description -->
+            <div class="mb-3">
+              <label for="description" class="form-label">Description *</label>
+              <textarea 
+                id="description" 
+                formControlName="description" 
+                class="form-control" 
+                rows="4"
+                [ngClass]="{'is-invalid': eventForm.get('description')?.invalid && eventForm.get('description')?.touched}"
+              ></textarea>
+              @if(eventForm.get('description')?.invalid && eventForm.get('description')?.touched){
+                <div class="invalid-feedback">
+                  @if(eventForm.get('description')?.errors?.['required']){<div>Description is required</div>}
+                  @if(eventForm.get('description')?.errors?.['minlength']){<div>Description must be at least 10 characters</div>}
+                  @if(eventForm.get('description')?.errors?.['serverError']){<div>{{ eventForm.get('description')?.errors?.['serverError'] }}</div>}
+                </div>
+              }
+              
+            </div>
+    
+            <div class="row">
+              <!-- Date -->
+              <div class="col-md-4 mb-3">
+                <label for="date" class="form-label">Date *</label>
+                <input 
+                  type="date" 
+                  id="date" 
+                  formControlName="date" 
+                  class="form-control"
+                  [ngClass]="{'is-invalid': eventForm.get('date')?.invalid && eventForm.get('date')?.touched}"
+                >
+                @if(eventForm.get('date')?.invalid && eventForm.get('date')?.touched){
+                  <div class="invalid-feedback">
+                    @if(eventForm.get('date')?.errors?.['required']){<div>Date is required</div>}
+                    @if(eventForm.get('date')?.errors?.['serverError']){<div>{{ eventForm.get('date')?.errors?.['serverError'] }}</div>}
+                  </div>
+                }
+              </div>
+    
+              <!-- Start Time -->
+              <div class="col-md-4 mb-3">
+                <label for="start_time" class="form-label">Start Time *</label>
+                <input 
+                  type="time" 
+                  id="start_time" 
+                  formControlName="start_time" 
+                  class="form-control"
+                  [ngClass]="{'is-invalid': (eventForm.get('start_time')?.invalid || eventForm.errors?.['invalidTimeRange']) && eventForm.get('start_time')?.touched}"
+                >
+                @if((eventForm.get('start_time')?.invalid || eventForm.errors?.['invalidTimeRange']) && eventForm.get('start_time')?.touched){
+                  <div class="invalid-feedback">
+                    @if(eventForm.get('start_time')?.errors?.['required']){ <div>Start time is required</div>}
+                    @if(eventForm.errors?.['invalidTimeRange']){<div>Start time must be before end time</div>}
+                    @if(eventForm.get('start_time')?.errors?.['serverError']){<div>{{ eventForm.get('start_time')?.errors?.['serverError'] }}</div>}
+                  </div>}
+                
+              </div>
+    
+              <!-- End Time -->
+              <div class="col-md-4 mb-3">
+                <label for="end_time" class="form-label">End Time *</label>
+                <input 
+                  type="time" 
+                  id="end_time" 
+                  formControlName="end_time" 
+                  class="form-control"
+                  [ngClass]="{'is-invalid': (eventForm.get('end_time')?.invalid || eventForm.errors?.['invalidTimeRange']) && eventForm.get('end_time')?.touched}"
+                >
+                @if((eventForm.get('end_time')?.invalid || eventForm.errors?.['invalidTimeRange']) && eventForm.get('end_time')?.touched){
+                  <div class="invalid-feedback">
+                      @if(eventForm.get('end_time')?.errors?.['required']){<div>End time is required</div>}
+                      @if(eventForm.errors?.['invalidTimeRange']){<div>End time must be after start time</div>}
+                      @if(eventForm.get('end_time')?.errors?.['serverError']){<div>{{ eventForm.get('end_time')?.errors?.['serverError'] }}</div>}
+                  </div>
+                }
+                
+              </div>
+            </div>
+    
+            <div class="row">
+              <!-- Location -->
+              <div class="col-md-6 mb-3">
+                <label for="location" class="form-label">Location *</label>
+                <input 
+                  type="text" 
+                  id="location" 
+                  formControlName="location" 
+                  class="form-control"
+                  [ngClass]="{'is-invalid': eventForm.get('location')?.invalid && eventForm.get('location')?.touched}"
+                >
+                @if(eventForm.get('location')?.invalid && eventForm.get('location')?.touched){
+                  <div class="invalid-feedback">
+                      @if(eventForm.get('location')?.errors?.['required']){<div>Location is required</div>}
+                      @if(eventForm.get('location')?.errors?.['serverError']){<div>{{ eventForm.get('location')?.errors?.['serverError'] }}</div>}
+                  </div>
+                }
+              </div>
+    
+              <!-- Category -->
+              <div class="col-md-6 mb-3">
+                <label for="category" class="form-label">Category *</label>
+                <select 
+                  id="category" 
+                  formControlName="category" 
+                  class="form-select"
+                  [ngClass]="{'is-invalid': eventForm.get('category')?.invalid && eventForm.get('category')?.touched}"
+                >
+                  <option value="" disabled>Select a category</option>
+                  <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+                </select>
+                @if(eventForm.get('category')?.invalid && eventForm.get('category')?.touched){
+                  <div class="invalid-feedback">
+                    @if(eventForm.get('category')?.errors?.['required']){<div>Category is required</div>}
+                    @if(eventForm.get('category')?.errors?.['serverError']){<div>{{ eventForm.get('category')?.errors?.['serverError'] }}</div>}
+                  </div>
+                }
+                
+              </div>
+            </div>
+    
+            <!-- Max Participants -->
+            <div class="mb-3">
+              <label for="max_participants" class="form-label">Maximum Participants (leave blank for unlimited)</label>
+              <input 
+                type="number" 
+                id="max_participants" 
+                formControlName="max_participants" 
+                class="form-control"
+                min="1"
+                [ngClass]="{'is-invalid': eventForm.get('max_participants')?.invalid && eventForm.get('max_participants')?.touched}"
+              >
+              @if(eventForm.get('max_participants')?.invalid && eventForm.get('max_participants')?.touched){
+                <div class="invalid-feedback">
+                  @if(eventForm.get('max_participants')?.errors?.['min']){<div>Minimum number of participants is 1</div>}
+                  @if(eventForm.get('max_participants')?.errors?.['serverError']){<div>{{ eventForm.get('max_participants')?.errors?.['serverError'] }}</div>}
+                </div>
+              }
+              
+            </div>
+    
+            <!-- Additional Info -->
+            <div class="mb-3">
+              <label for="additional_info" class="form-label">Additional Information</label>
+              <textarea 
+                id="additional_info" 
+                formControlName="additional_info" 
+                class="form-control" 
+                rows="3"
+              ></textarea>
+            </div>
+    
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+              <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+                @if(isLoading){ <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>}
+                {{ isEditMode ? 'Update Event' : 'Create Event' }}
+              </button>
+            </div>
+          </form>
+        }        
+      </div>
+    </div>
+  </div>
