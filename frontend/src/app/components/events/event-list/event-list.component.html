@@ -1,6 +1,6 @@
 <div class="container mx-auto mt-4 px-4"> <div class="flex flex-wrap items-center justify-between mb-4"> <div> <h2 class="text-2xl font-semibold">Events</h2>
 </div>
-<div class="flex-shrink-0"> @if(authService.isAdmin()){
+<div class="flex-shrink-0"> @if(isAdmin){
       <button class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium" routerLink="/events/create">Create Event</button>
   }
    <button class="ml-2 px-4 py-2 rounded border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm font-medium" routerLink="/events/calendar">Calendar View</button>

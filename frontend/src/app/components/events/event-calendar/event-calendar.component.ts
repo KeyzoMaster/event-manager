@@ -48,7 +48,7 @@ export class EventCalendarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isAdmin = this.authService.isAdmin();
+    this.authService.getUser().subscribe(user => {this.isAdmin = user.role === 'admin'});
     this.loadEvents();
   }
 
@@ -69,11 +69,12 @@ export class EventCalendarComponent implements OnInit {
 
   updateCalendarEvents(): void {
     // Transform events to FullCalendar format
+    console.log(this.events);
     const calendarEvents = this.events.map(event => ({
       id: event.id.toString(),
       title: event.title,
-      start: `${event.start_date}`,
-      end: `${event.end_date}`,
+      start_date: `${event.start_date}`,
+      end_date: `${event.end_date}`,
       color: this.getCategoryColor(event.category)
     }));
     

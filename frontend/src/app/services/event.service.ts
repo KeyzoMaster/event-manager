@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { appSettings } from '../app.settings';
-import { AppEvent } from '../models/event.model';
+import { AppEvent, EventsCount } from '../models/event.model';
+import { Registration } from '../models/registration.model';
 
 @Injectable({
   providedIn: 'root'
@@ -27,8 +28,7 @@ export class EventService {
   }
 
   getUpcomingEvents(): Observable<AppEvent[]> {
-    const url = `${this.apiUrl}/upcoming`; // Or however you define this endpoint in Laravel
-    return this.http.get<any>(url);
+    return this.http.get<AppEvent[]>(`${this.apiUrl}/upcoming`);
   }
 
   // Get a single event by ID
@@ -53,23 +53,23 @@ export class EventService {
 
   // Register for an event
   registerForEvent(eventId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${eventId}/register`, {});
+    return this.http.post(`${this.apiUrl}/events/${eventId}/register`, {});
   }
 
-  getUserRegisteredEvents(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/registrations`);
+  getUserRegisteredEvents(): Observable<Registration[]> {
+    return this.http.get<Registration[]>(`${this.apiUrl}/registrations`);
   }
 
-  getTotalEventsCount(): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/count`);
+  getEventsCount(): Observable<EventsCount> {
+    return this.http.get<EventsCount>(`${this.apiUrl}/counts`);
   }
 
   checkRegistration(eventId: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${eventId}/check-registration`);
+    return this.http.get<any>(`${this.apiUrl}/events/${eventId}/register`);
   }
 
   cancelRegistration(eventId: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${eventId}/registration`);
+    return this.http.delete<any>(`${this.apiUrl}/events/${eventId}/register`);
   }
 
   getCategories(): Observable<any>{

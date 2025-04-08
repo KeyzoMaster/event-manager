@@ -112,8 +112,4 @@ export class RegisterComponent implements OnInit {
         }
       });
   }
-
-  onClick(): void {
-    console.log(this.registerForm.invalid);
-  }
 }

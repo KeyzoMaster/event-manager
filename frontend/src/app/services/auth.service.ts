@@ -4,12 +4,11 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import { appSettings } from '../app.settings';
+import { AppUser } from '../models/user.model';
 
 interface TokenPayload {
   sub: string;
-  roles?: string[];
-  isAdmin?: boolean;
-  permissions?: string[];
+  role?: string;
   exp: number;
 }
 
@@ -31,6 +30,7 @@ interface RegisterResponse {
 export class AuthService {
   private tokenKey = 'auth_token';
   private apiUrl = appSettings.apiUrl+'/auth'; // Replace with your actual API base URL
+  private user : AppUser | any
   
   constructor(private http: HttpClient) {}
   
@@ -84,6 +84,15 @@ export class AuthService {
     }
   }
   
+  getUser(): Observable<AppUser> {
+    return this.http.post<AppUser>(`${this.apiUrl}/me`, {});
+  }
+
+  isAdmin(): boolean{
+   
+    return this.user ? this.user.role === 'admin' : false
+  }
+
   // Get token with safety checks
   getToken(): string | null {
     try {
@@ -98,43 +107,7 @@ export class AuthService {
       return null;
     }
   }
-  
-  // Check if user is an admin
-  isAdmin(): boolean {
-    const token = this.getToken();
-    if (!token) {
-      return false;
-    }
-    
-    try {
-      const decodedToken = jwtDecode<TokenPayload>(token);
-      
-      // Check token expiration
-      const currentTime = Date.now() / 1000;
-      if (decodedToken.exp < currentTime) {
-        console.warn('Token expired');
-        return false;
-      }
-      
-      // Check admin status
-      if (decodedToken.isAdmin === true) {
-        return true;
-      }
-      
-      if (decodedToken.roles && Array.isArray(decodedToken.roles)) {
-        return decodedToken.roles.includes('admin') || decodedToken.roles.includes('ADMIN');
-      }
-      
-      if (decodedToken.permissions && Array.isArray(decodedToken.permissions)) {
-        return decodedToken.permissions.includes('admin:access') || decodedToken.permissions.includes('ADMIN_ACCESS');
-      }
-      
-      return false;
-    } catch (e) {
-      console.error('Error decoding token or checking admin status:', e);
-      return false;
-    }
-  }
+
   
   // Remove token on logout
   logout(): void {

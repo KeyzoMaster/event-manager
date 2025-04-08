@@ -55,7 +55,8 @@ export class EventDetailComponent implements OnInit {
   checkRegistrationStatus(eventId: string): void {
     this.eventService.checkRegistration(eventId).subscribe({
       next: (status) => {
-        this.isRegistered = status.isRegistered;
+        console.log(status.is_registered);
+        this.isRegistered = status.is_registered;
       },
       error: (error) => {
         console.error('Error checking registration status:', error);

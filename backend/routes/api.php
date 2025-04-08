@@ -21,7 +21,8 @@ Route::group(['middleware' => 'auth:api', 'prefix'=> 'events'], function () {
     Route::get('/{event}', [EventController::class, 'show']);
 
     Route::post('/{event}/register', [RegistrationController::class, 'register']);
-    Route::get('/{event}/check-registration', [EventController::class, 'checkRegistration']);
+    Route::delete('/{event}/register', [RegistrationController::class, 'cancel']);
+    Route::get('/{event}/register', [EventController::class, 'checkRegistration']);
 
     Route::group(['middleware' => 'admin'], function () {
         Route::post('', [EventController::class, 'store']);

@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-gray-800">Welcome, {{userName}}!</h1>
+        <h1 class="text-2xl font-bold text-gray-800">Welcome, {{user?.name}}!</h1>
         <p class="text-gray-600">Here's your event dashboard</p>
       </div>
       <div class="flex space-x-3">
@@ -51,7 +51,7 @@
                 </div>
                 <div>
                     <p class="text-gray-500 text-sm">Upcoming Events</p>
-                    <p class="text-2xl font-bold">{{upcomingEvents.length}}</p>
+                    <p class="text-2xl font-bold">{{events_counts?.upcoming}}</p>
                 </div>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                 </div>
                 <div>
                     <p class="text-gray-500 text-sm">My Registrations</p>
-                    <p class="text-2xl font-bold">{{totalRegisteredEvents}}</p>
+                    <p class="text-2xl font-bold">{{events_counts?.total}}</p>
                 </div>
                 </div>
             </div>
@@ -82,7 +82,7 @@
                     </div>
                     <div>
                         <p class="text-gray-500 text-sm">Total Events</p>
-                        <p class="text-2xl font-bold">{{totalEvents}}</p>
+                        <p class="text-2xl font-bold">{{events_counts?.total}}</p>
                     </div>
                     </div>
                 </div>
@@ -148,7 +148,7 @@
                     </div>
                 }@else{
                     <div>
-                        @for(upcoming_event of upcomingEvents; track upcoming_event.id){
+                        @for(upcoming_event of upcomingEvents; track $index){
                             <div class="border-b border-gray-200 last:border-b-0">
                             <div class="p-4 hover:bg-gray-50 transition-colors">
                             <div class="flex justify-between">
@@ -164,7 +164,7 @@
                                 </svg>
                                 {{upcoming_event.location}}
                                 </div>
-                                <a [routerLink]="['/upcoming_events', upcoming_event.id]" class="text-blue-600 hover:text-blue-800 text-sm">
+                                <a [routerLink]="['/events', upcoming_event.id]" class="text-blue-600 hover:text-blue-800 text-sm">
                                 View Details →
                                 </a>
                             </div>
@@ -198,27 +198,27 @@
                 }@else{
                     <!-- Registered Events List -->
                     <div>
-                        @for(event of registeredEvents; track event.id){
+                        @for(registration of registeredEvents; track $index){
                             <div class="border-b border-gray-200 last:border-b-0">
                                 <div class="p-4 hover:bg-gray-50 transition-colors">
                                     <div class="flex justify-between">
-                                    <h3 [ngClass]="getEventStatusClass(event)" class="font-medium">{{event.title}}</h3>
-                                    <span class="text-sm text-gray-500">{{event.start_date | date:'MMM d, y, h:mm a'}}</span>
+                                    <h3 [ngClass]="getEventStatusClass(registration.event)" class="font-medium">{{registration.event.title}}</h3>
+                                    <span class="text-sm text-gray-500">{{registration.event.start_date | date:'MMM d, y, h:mm a'}}</span>
                                     </div>
-                                    <p class="text-gray-600 text-sm mt-1 mb-3 line-clamp-2">{{event.description}}</p>
+                                    <p class="text-gray-600 text-sm mt-1 mb-3 line-clamp-2">{{registration.event.description}}</p>
                                     <div class="flex justify-between items-center">
                                     <div class="flex items-center text-sm text-gray-500">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
-                                        {{event.location}}
+                                        {{registration.event.location}}
                                     </div>
                                     <div class="flex space-x-2">
-                                        <a [routerLink]="['/events', event.id]" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm hover:bg-blue-200 transition-colors">
+                                        <a [routerLink]="['/events', registration.event.id]" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm hover:bg-blue-200 transition-colors">
                                         Details
                                         </a>
-                                        <button (click)="cancelRegistration(event.id.toString())" class="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200 transition-colors">
+                                        <button (click)="cancelRegistration(registration.event.id.toString())" class="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200 transition-colors">
                                         Cancel
                                         </button>
                                     </div>

@@ -39,7 +39,7 @@ class EventController extends Controller
         $direction = $request->get('direction', 'asc');
         $query->orderBy($sort, $direction);
 
-        $events = $query->paginate(10);
+        $events = $query->paginate(9);
         return response()->json($events);
     }
 
@@ -164,8 +164,8 @@ class EventController extends Controller
         $sort = $request->get('sort', 'start_date');
         $direction = $request->get('direction', 'asc');
         $query->orderBy($sort, $direction);
-        
-        $events = $query->paginate(10);
+        $events = $query->get();
+
         return response()->json( $events);
     }
 

@@ -6,6 +6,9 @@ import { DatePipe, NgClass } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
+import { AppUser } from '../../models/user.model';
+import {EventsCount} from '../../models/event.model';
+import { Registration } from '../../models/registration.model';
 
 interface UserPayload {
   sub: string;
@@ -13,6 +16,8 @@ interface UserPayload {
   email?: string;
   exp: number;
 }
+
+
 
 @Component({
   selector: 'app-dashboard',
@@ -23,12 +28,11 @@ interface UserPayload {
 })
 export class DashboardComponent implements OnInit {
   upcomingEvents: AppEvent[] = [];
-  registeredEvents: AppEvent[] = [];
+  registeredEvents: Registration[] = [];
   isAdmin = false;
   isLoading = true;
-  userName = '';
-  totalEvents = 0;
-  totalRegisteredEvents = 0;
+  user : AppUser | null = null;
+  events_counts : EventsCount | null = null;
   errorMessage = '';
 
   constructor(
@@ -43,26 +47,21 @@ export class DashboardComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    
-    this.isAdmin = this.authService.isAdmin();
-    this.loadUserName();
+    this.loadUser();
     this.loadDashboardData();
+    this.eventService.getEventsCount().subscribe(
+      events_counts => {this.events_counts = events_counts;}
+    );
   }
 
   // New method to extract user name from token
-  loadUserName(): void {
+  loadUser(): void {
     const token = this.authService.getToken();
     if (token) {
-      try {
-        const decodedToken = jwtDecode<UserPayload>(token);
-        console.log(decodedToken.name);
-        this.userName = decodedToken.name || 'User';
-      } catch (error) {
-        console.error('Error decoding token:', error);
-        this.userName = 'User';
-      }
-    } else {
-      this.userName = 'User';
+      this.authService.getUser().subscribe(user => {
+        this.user = user; 
+        this.isAdmin = user.role === 'admin'; 
+      })
     }
   }
 
@@ -74,6 +73,7 @@ export class DashboardComponent implements OnInit {
     this.eventService.getUpcomingEvents().subscribe({
       next: (events) => {
         this.upcomingEvents = events;
+        console.log(this.upcomingEvents);
         this.isLoading = false;
       },
       error: (error: HttpErrorResponse) => {
@@ -93,7 +93,6 @@ export class DashboardComponent implements OnInit {
     this.eventService.getUserRegisteredEvents().subscribe({
       next: (events) => {
         this.registeredEvents = events;
-        this.totalRegisteredEvents = events.length;
       },
       error: (error: HttpErrorResponse) => {
         console.error('Error loading registered events:', error);
@@ -107,10 +106,10 @@ export class DashboardComponent implements OnInit {
     });
     
     // Get total events count (admin only)
-    if (this.isAdmin) {
-      this.eventService.getTotalEventsCount().subscribe({
-        next: (count) => {
-          this.totalEvents = Number(count);
+    if (this.user) {
+      this.eventService.getEventsCount().subscribe({
+        next: (counts) => {
+          this.events_counts = counts;
         },
         error: (error: HttpErrorResponse) => {
           console.error('Error loading total events count:', error);
@@ -129,10 +128,9 @@ export class DashboardComponent implements OnInit {
     this.eventService.cancelRegistration(eventId).subscribe({
       next: () => {
         // Remove from registeredEvents list
-        this.registeredEvents = this.registeredEvents.filter(event => {
-          return event.id.toString() !== eventId;
+        this.registeredEvents = this.registeredEvents.filter(registration => {
+          return registration.event.id.toString() !== eventId;
         });
-        this.totalRegisteredEvents = this.registeredEvents.length;
       },
       error: (error: HttpErrorResponse) => {
         console.error('Error canceling registration:', error);

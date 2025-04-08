@@ -8,7 +8,7 @@ export const authGuard: CanActivateFn | CanMatchFn = () => {
   console.log('Auth guard checking if logged in');
   console.log('Token present:', !!authService.getToken());
 
-  return true;
+  if(authService.isLoggedIn()) return true;
 
   return router.parseUrl('/login');
 };

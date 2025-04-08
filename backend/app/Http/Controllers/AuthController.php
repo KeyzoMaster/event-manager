@@ -13,7 +13,7 @@ class AuthController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|min:8',
-            'role'=> 'required'
+            'role'=> 'nullable|string'
         ]);
   
         if($validator->fails()){
@@ -23,7 +23,7 @@ class AuthController extends Controller
         $user = new User;
         $user->name = request()->name;
         $user->email = request()->email;
-        $user->role = request()->role();
+        $user->role = request()->role ?? 'user';
         $user->password = bcrypt(request()->password);
         $user->save();
   

@@ -16,6 +16,7 @@ import { SlicePipe, DatePipe, NgClass } from '@angular/common';
 })
 export class EventListComponent implements OnInit {
   events: any[] = [];
+  isAdmin: boolean = false;
   loading = false;
   error = '';
   filterForm: FormGroup;
@@ -27,7 +28,7 @@ export class EventListComponent implements OnInit {
   constructor(
     private eventService: EventService,
     private formBuilder: FormBuilder,
-    public authService: AuthService
+    private authService: AuthService
   ) {
     this.filterForm = this.formBuilder.group({
       category: [''],
@@ -41,6 +42,7 @@ export class EventListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadEvents();
+    this.isAdmin = this.authService.isAdmin();
     this.loadFilterOptions();
   }
 

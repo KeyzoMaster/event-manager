@@ -55,27 +55,32 @@ class RegistrationController extends Controller
     public function userRegistrations()
     {
         $userId = JWTAuth::parseToken()->authenticate()->id; // Get user ID from JWT
-        
         $registrations = Registration::with('event')
             ->where('user_id', $userId) // Use JWT user ID
             ->orderBy('registration_date', 'desc')
             ->get();
             
-        return response()->json(['registrations' => $registrations]);
+        return response()->json($registrations);
     }
     
     /**
      * Cancel a registration
      */
-    public function cancel(Registration $registration){
-        $userId = JWTAuth::parseToken()->authenticate()->id; // Get user ID from JWT
+    public function cancel(Event $event){
+        $userId = JWTAuth::parseToken()->authenticate()->id;
+        $eventId = $event->id;
+        $registration = Registration::where([
+            ['user_id', $userId],
+            ['event_id', $eventId],
+        ])->first();
+        ; // Get user ID from JWT
         // Check if user is authorized to cancel this registration
         if ($userId !== $registration->user_id) { // Use JWT user ID
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Unauthorized because '.$userId.'!=='.$registration.' !'], 403);
         }
         
         $registration->status = 'cancelled';
-        $registration->save();
+        $registration->delete();
         
         return response()->json(['message' => 'Registration cancelled successfully']);
     }

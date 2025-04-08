@@ -12,3 +12,9 @@ export interface AppEvent {
     created_at: string;
     updated_at: string;
 }
+
+export interface EventsCount{
+    total: number;
+    upcoming: number;
+    registered: number;
+}

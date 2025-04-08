@@ -59,7 +59,7 @@
                         @if(registerForm.get('password_confirmation')?.errors?.['mismatch']){<div class="text-red-500 text-sm mt-1">Passwords do not match</div>}
                   </div>
                     <div class="mb-6">
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button" (click)="onClick()">
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:cursor-pointer" type="submit">
                           @if(loading){<span class="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-500 mr-2"></span>}
                           Register
                         </button>

@@ -5,7 +5,6 @@ import { AuthService } from '../services/auth.service';
 export const adminGuard: CanActivateFn | CanMatchFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  return true;
 
   if(authService.isLoggedIn() && authService.isAdmin()) return true;
 
