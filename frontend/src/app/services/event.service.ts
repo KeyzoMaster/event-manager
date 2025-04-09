@@ -37,18 +37,18 @@ export class EventService {
   }
 
   // Create a new event (admin only)
-  createEvent(event: Partial<AppEvent>): Observable<AppEvent> {
+  createEvent(event: AppEvent): Observable<AppEvent> {
     return this.http.post<AppEvent>(`${this.apiUrl}/events`, event);
   }
 
   // Update an existing event (admin only)
-  updateEvent(id: string, event: Partial<AppEvent>): Observable<AppEvent> {
-    return this.http.put<AppEvent>(`${this.apiUrl}/${id}`, event);
+  updateEvent(id: string, event: Partial<AppEvent>): Observable<Partial<AppEvent>> {
+    return this.http.patch<Partial<AppEvent>>(`${this.apiUrl}/events/${id}`, event);
   }
 
   // Delete an event (admin only)
   deleteEvent(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/events/${id}`);
   }
 
   // Register for an event

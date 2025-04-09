@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;// Import JWTAuth
+use App\Models\Registration;
 
 class EventController extends Controller
 {
@@ -39,7 +40,7 @@ class EventController extends Controller
         $direction = $request->get('direction', 'asc');
         $query->orderBy($sort, $direction);
 
-        $events = $query->paginate(9);
+        $events = $query->get();
         return response()->json($events);
     }
 
@@ -82,19 +83,19 @@ class EventController extends Controller
     {
         $userId = JWTAuth::parseToken()->authenticate()->id; // Get user ID from JWT
 
-        if ($userId !== $event->user_id && auth()->payload()->get('role') !== 'admin') { // Access role from payload
+        if ($userId !== $event->user_id &&  JWTAuth::parseToken()->authenticate()->role !== 'admin') { // Access role from payload
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'location' => 'required|string|max:255',
-            'category' => 'required|string|max:100',
-            'participants_number' => 'nullable|integer|min:0',
-            'max_participants' => 'nullable|integer|min:1',
+            'title' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
+            'start_date' => 'sometimes|date',
+            'end_date' => 'sometimes|date|after_or_equal:start_date',
+            'location' => 'sometimes|string|max:255',
+            'category' => 'sometimes|string|max:100',
+            'participants_number' => 'sometimes|integer|min:0',
+            'max_participants' => 'sometimes|integer|min:1',
         ]);
 
         $event->update($request->all());
@@ -107,7 +108,7 @@ class EventController extends Controller
     public function destroy(Event $event)
     {
         $userId = JWTAuth::parseToken()->authenticate()->id; // Get user ID from JWT
-        if ($userId !== $event->user_id && auth()->payload()->get('role') !== 'admin') {  //get role from payload
+        if ($userId !== $event->user_id && JWTAuth::parseToken()->authenticate()->role !== 'admin') {  //get role from payload
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -174,14 +175,15 @@ class EventController extends Controller
      */
     public function counts()
     {
+        $userId = JWTAuth::parseToken()->authenticate()->id;
         $totalEvents = Event::count();
         $upcomingEvents = Event::where('start_date', '>=', now()->startOfDay())->count();
-        $pastEvents = Event::where('end_date', '<', now()->startOfDay())->count();
+        $registeredEvents = Registration::where('user_id', $userId)->count();
 
         return response()->json([
             'total' => $totalEvents,
             'upcoming' => $upcomingEvents,
-            'past' => $pastEvents,
+            'registered' => $registeredEvents,
         ]);
     }
 }

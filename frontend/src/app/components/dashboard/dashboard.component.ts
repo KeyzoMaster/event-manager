@@ -5,19 +5,9 @@ import { AppEvent } from '../../models/event.model';
 import { DatePipe, NgClass } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { jwtDecode } from 'jwt-decode';
 import { AppUser } from '../../models/user.model';
 import {EventsCount} from '../../models/event.model';
 import { Registration } from '../../models/registration.model';
-
-interface UserPayload {
-  sub: string;
-  name?: string;
-  email?: string;
-  exp: number;
-}
-
-
 
 @Component({
   selector: 'app-dashboard',
@@ -73,7 +63,6 @@ export class DashboardComponent implements OnInit {
     this.eventService.getUpcomingEvents().subscribe({
       next: (events) => {
         this.upcomingEvents = events;
-        console.log(this.upcomingEvents);
         this.isLoading = false;
       },
       error: (error: HttpErrorResponse) => {

@@ -9,6 +9,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { EventService } from '../../../services/event.service';
 import { AuthService } from '../../../services/auth.service';
 import { AppEvent } from '../../../models/event.model';
+import moment from 'moment';
 
 @Component({
   selector: 'app-event-calendar',
@@ -48,7 +49,10 @@ export class EventCalendarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.getUser().subscribe(user => {this.isAdmin = user.role === 'admin'});
+    this.authService.getUser().subscribe(user => {
+      this.isAdmin = user.role === 'admin';
+      this.calendarOptions.editable = user.role === 'admin';
+    });
     this.loadEvents();
   }
 
@@ -69,14 +73,15 @@ export class EventCalendarComponent implements OnInit {
 
   updateCalendarEvents(): void {
     // Transform events to FullCalendar format
-    console.log(this.events);
+    // console.log(this.events);
     const calendarEvents = this.events.map(event => ({
       id: event.id.toString(),
       title: event.title,
-      start_date: `${event.start_date}`,
-      end_date: `${event.end_date}`,
+      date: moment(event.start_date).format('YYYY-MM-DD'),
+    //end_date: moment(event.end_date).format(),
       color: this.getCategoryColor(event.category)
     }));
+    console.log(calendarEvents);
     
     this.calendarOptions.events = calendarEvents;
   }

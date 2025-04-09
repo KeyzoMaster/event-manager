@@ -1,6 +1,6 @@
 // event-detail.component.ts
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../../../services/event.service';
 import { AuthService } from '../../../services/auth.service';
 import { AppEvent } from '../../../models/event.model';
@@ -22,13 +22,14 @@ export class EventDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private eventService: EventService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.isAdmin = this.authService.isAdmin();
+    this.authService.getUser().subscribe(user => {this.isAdmin = user.role === 'admin'})
     const eventId = this.route.snapshot.paramMap.get('id');
-    
+    console.log('Initialization of event details');
     if (eventId) {
       this.loadEvent(eventId);
       this.checkRegistrationStatus(eventId);
@@ -91,7 +92,7 @@ export class EventDetailComponent implements OnInit {
   }
 
   editEvent(): void {
-    // Navigate to edit page or open modal
+    if(this.event) this.router.navigate([`/events/${this.event!.id}/edit`]);
   }
 
   deleteEvent(): void {
@@ -100,7 +101,7 @@ export class EventDetailComponent implements OnInit {
     if (confirm('Are you sure you want to delete this event?')) {
       this.eventService.deleteEvent(this.event.id.toString()).subscribe({
         next: () => {
-          // Navigate back to events list
+          this.router.navigate(['/events']);
         },
         error: (error) => {
           console.error('Error deleting event:', error);

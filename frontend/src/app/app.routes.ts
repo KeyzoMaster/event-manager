@@ -17,7 +17,7 @@ export const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'events', component: EventListComponent, canActivate: [authGuard] },
   { path: 'events/calendar', component: EventCalendarComponent, canActivate: [authGuard] },
+  { path: 'events/new', component: EventFormComponent, canActivate: [adminGuard] },
   { path: 'events/:id', component: EventDetailComponent, canActivate: [authGuard] },
-  { path: 'events/create', component: EventFormComponent, canActivate: [adminGuard] },
   { path: 'events/:id/edit', component: EventFormComponent, canActivate: [adminGuard] },
 ];

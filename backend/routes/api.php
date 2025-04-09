@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
@@ -24,11 +25,11 @@ Route::group(['middleware' => 'auth:api', 'prefix'=> 'events'], function () {
     Route::delete('/{event}/register', [RegistrationController::class, 'cancel']);
     Route::get('/{event}/register', [EventController::class, 'checkRegistration']);
 
-    Route::group(['middleware' => 'admin'], function () {
-        Route::post('', [EventController::class, 'store']);
-        Route::put('/{event}', [EventController::class, 'update']);
-        Route::delete('/{event}', [EventController::class, 'destroy']);
-    });
+    
+        Route::post('', [EventController::class, 'store'])->middleware(AdminMiddleware::class);
+        Route::patch('/{event}', [EventController::class, 'update'])->middleware(AdminMiddleware::class);
+        Route::delete('/{event}', [EventController::class, 'destroy'])->middleware(AdminMiddleware::class);
+    
 });
 
 Route::group(['middleware' => 'auth:api'],function(){

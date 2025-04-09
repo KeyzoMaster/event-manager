@@ -29,8 +29,10 @@ export class EventFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.eventId = this.route.snapshot.paramMap.get('id');
     this.initForm();
     this.eventId = this.route.snapshot.paramMap.get('id');
+    console.log('Initialization of event form');
     
     if (this.eventId) {
       this.isEditMode = true;
@@ -42,8 +44,8 @@ export class EventFormComponent implements OnInit {
     this.eventForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      start_time: ['', Validators.required],
-      end_time: ['', Validators.required],
+      start_date: ['', Validators.required],
+      end_date: ['', Validators.required],
       location: ['', Validators.required],
       category: ['', Validators.required],
       max_participants: [null, [Validators.min(1)]],
@@ -51,9 +53,8 @@ export class EventFormComponent implements OnInit {
   }
 
   timeValidator(group: FormGroup): {[key: string]: boolean} | null {
-    const startDate = group.get('start_Date')?.value;
-    const endDate = group.get('end_Date')?.value;
-    
+    const startDate = group.get('start_date')?.value;
+    const endDate = group.get('end_date')?.value;
     if (startDate && endDate && startDate >= endDate) {
       return { 'invalidTimeRange': true };
     }
@@ -81,8 +82,8 @@ export class EventFormComponent implements OnInit {
     this.eventForm.patchValue({
       title: event.title,
       description: event.description,
-      start_date: event.start_date,
-      end_date: event.end_date,
+      start_date: new Date(event.start_date),
+      end_date: new Date(event.end_date),
       location: event.location,
       category: event.category,
       max_participants: event.max_participants,
@@ -90,6 +91,7 @@ export class EventFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log(this.eventForm)
     if (this.eventForm.invalid) {
       this.markFormGroupTouched(this.eventForm);
       return;
@@ -105,7 +107,7 @@ export class EventFormComponent implements OnInit {
     }
   }
 
-  createEvent(eventData: any): void {
+  createEvent(eventData: AppEvent): void {
     this.eventService.createEvent(eventData).subscribe({
       next: () => {
         this.router.navigate(['/events']);
@@ -116,7 +118,7 @@ export class EventFormComponent implements OnInit {
     });
   }
 
-  updateEvent(id: string, eventData: any): void {
+  updateEvent(id: string, eventData: Partial<AppEvent>): void {
     this.eventService.updateEvent(id, eventData).subscribe({
       next: () => {
         this.router.navigate(['/events', id]);

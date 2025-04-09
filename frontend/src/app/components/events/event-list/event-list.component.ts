@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { RouterLink } from '@angular/router';
 import { SlicePipe, DatePipe, NgClass } from '@angular/common';
+import { AppEvent } from '../../../models/event.model';
 
 @Component({
   selector: 'app-event-list',
@@ -15,7 +16,7 @@ import { SlicePipe, DatePipe, NgClass } from '@angular/common';
   styleUrls: ['./event-list.component.css']
 })
 export class EventListComponent implements OnInit {
-  events: any[] = [];
+  events: AppEvent[] = [];
   isAdmin: boolean = false;
   loading = false;
   error = '';
@@ -52,10 +53,8 @@ export class EventListComponent implements OnInit {
     
     this.eventService.getEvents(this.filterForm.value)
       .subscribe({
-        next: (response) => {
-          this.events = response.data;
-          this.currentPage = response.current_page;
-          this.totalPages = response.last_page;
+        next: (events) => {
+          this.events = events;
           this.loading = false;
         },
         error: (error) => {
