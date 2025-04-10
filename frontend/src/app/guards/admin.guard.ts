@@ -1,27 +1,14 @@
 import { CanActivateFn, Router, CanMatchFn } from '@angular/router';
 import {inject} from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { AppUser } from '../models/user.model';
-
-
-class AdminChecker{
-  private isAdmin : boolean = false;
-  constructor(private authService: AuthService){
-    this.authService.getUser().subscribe(user => {this.isAdmin = user.role === 'admin';})
-  }
-  isAdminFn(){
-    console.log('is admin:'+this.isAdmin);
-    return this.isAdmin;
-  }
-
-}
+import { AdminService } from '../services/admin.service';
 
 export const adminGuard: CanActivateFn | CanMatchFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  const adminChecker = true;
+  const adminChecker = inject(AdminService);
 
-  if(authService.isLoggedIn() && adminChecker) return true;
+  if(authService.isLoggedIn() && adminChecker.adminChecker()) return true;
 
   if (authService.isLoggedIn()) return router.parseUrl('/dashboard');
 

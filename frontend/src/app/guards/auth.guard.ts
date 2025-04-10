@@ -5,8 +5,6 @@ import { AuthService } from '../services/auth.service';
 export const authGuard: CanActivateFn | CanMatchFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  console.log('Auth guard checking if logged in');
-  console.log('Token present:', !!authService.getToken());
 
   if(authService.isLoggedIn()) return true;
 
